@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
   title: {
     default: SITE.title,
-    template: '%s · DSHub',
+    template: '%s · 插件港',
   },
   description: SITE.description,
   keywords: [

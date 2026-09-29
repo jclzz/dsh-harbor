@@ -1,4 +1,4 @@
-# DSHub · DeepSeek Harness 群友插件收录站 — 设计说明
+# 插件港 DSH Harbor · DeepSeek Harness 社区插件收录站 — 设计说明
 
 > v2（当前版本）：按 DSH 官网（deepseek.com/harness）风格全面重做，见下方「v2 规则」。v1 深蓝极光版已被覆盖，仅保留在 git/历史截图中。
 
@@ -14,7 +14,7 @@
 - 颜色：底 `#000000`；面板 `#0C0C0E`；描边 `rgba(255,255,255,.08/.14)`；文字 `#FFF` / `rgba(255,255,255,.56)` / `.36`；唯一强调色 `#4D6BFE`（标题关键词、HOT 角标、代码高亮、label 圆点）。
 - 背景：238px 大网格 `rgba(255,255,255,.045)`，mask 渐隐至 78% 视口高。
 - 组件：按钮胶囊 999（主按钮白底黑字）；卡片 16 圆角单色描边；区块标题 = 描边 pill label（mono 大写 + 蓝点）+ 38px 黑体；头像保留渐变（社区人情味，唯一彩色区域）。
-- 结构：导航（方块 logo + DSHub +「社区插件」pill + 白底提交按钮）→ Hero（左标题/副文案/三按钮，右安装卡含 4 项统计）→ 分类胶囊 → FEATURED 本周精选 3×2 → NEW 最新上架（左说明右列表）→ CONTRIBUTE 三步 + manifest 代码窗 → CONTRIBUTORS 贡献者墙 → CTA（网格底单色盒）→ 页脚。
+- 结构：导航（方块 logo + DSH Harbor +「社区插件」pill + 白底提交按钮）→ Hero（左标题/副文案/三按钮，右安装卡含 4 项统计）→ 分类胶囊 → FEATURED 本周精选 3×2 → NEW 最新上架（左说明右列表）→ CONTRIBUTE 三步 + manifest 代码窗 → CONTRIBUTORS 贡献者墙 → CTA（网格底单色盒）→ 页脚。
 
 ## 响应式规则（v2.1 修复）
 - body 100% 流宽，`.wrap` max-width 1200 居中；标题字号 clamp()。

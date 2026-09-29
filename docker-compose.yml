@@ -1,8 +1,8 @@
 services:
-  dshub:
+  dsh-harbor:
     build: .
-    image: dshub:latest
-    container_name: dshub
+    image: dsh-harbor:latest
+    container_name: dsh-harbor
     restart: unless-stopped
     environment:
       # 站点绝对地址：canonical / OG / sitemap / 徽章 Markdown 都用它，必须填对
@@ -10,11 +10,11 @@ services:
       # 有 token 才能稳定跑提交预检与同步，没有会吃匿名限流
       GITHUB_TOKEN: ${GITHUB_TOKEN:-}
       # 提交写盘目录（容器内）
-      DSHUB_DATA_DIR: /app/data
+      HARBOR_DATA_DIR: /app/data
       # 同一 IP 每小时最多几次提交
-      DSHUB_SUBMIT_PER_HOUR: ${DSHUB_SUBMIT_PER_HOUR:-8}
+      HARBOR_SUBMIT_PER_HOUR: ${HARBOR_SUBMIT_PER_HOUR:-8}
       # 是否强制要求仓库声明开源许可证
-      DSHUB_REQUIRE_LICENSE: ${DSHUB_REQUIRE_LICENSE:-true}
+      HARBOR_REQUIRE_LICENSE: ${HARBOR_REQUIRE_LICENSE:-true}
       TZ: Asia/Shanghai
     volumes:
       # 目录真源挂到宿主机，容器重建不丢数据，也方便直接改 / git diff
@@ -27,10 +27,10 @@ services:
 
   caddy:
     image: caddy:2-alpine
-    container_name: dshub-caddy
+    container_name: dsh-harbor-caddy
     restart: unless-stopped
     depends_on:
-      - dshub
+      - dsh-harbor
     environment:
       SITE_DOMAIN: ${SITE_DOMAIN:?请在 .env 里设置 SITE_DOMAIN}
       ACME_EMAIL: ${ACME_EMAIL:?请在 .env 里设置 ACME_EMAIL}

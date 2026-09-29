@@ -1,5 +1,5 @@
 /**
- * DSHub 数据模型
+ * 插件港 DSH Harbor 数据模型
  *
  * 唯一真源：data/plugins.json
  * 人工整理的编辑字段（中文名、分类、一句话简介）与 GitHub 机器字段（star、

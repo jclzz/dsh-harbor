@@ -19,7 +19,7 @@ import type { CategoryId, Plugin } from '@/lib/types'
  */
 
 const WINDOW_MS = 60 * 60 * 1000
-const MAX_PER_WINDOW = Number(process.env.DSHUB_SUBMIT_PER_HOUR ?? 8)
+const MAX_PER_WINDOW = Number(process.env.HARBOR_SUBMIT_PER_HOUR ?? 8)
 
 const hits = new Map<string, number[]>()
 
@@ -130,8 +130,8 @@ export async function POST(request: Request) {
   }
   const repo = check.data
 
-  /* 许可证是硬要求：没许可证等于没授权别人使用（可用 DSHUB_REQUIRE_LICENSE=false 放宽） */
-  const requireLicense = process.env.DSHUB_REQUIRE_LICENSE !== 'false'
+  /* 许可证是硬要求：没许可证等于没授权别人使用（可用 HARBOR_REQUIRE_LICENSE=false 放宽） */
+  const requireLicense = process.env.HARBOR_REQUIRE_LICENSE !== 'false'
   if (requireLicense && !repo.license) {
     return bad(
       `${repo.fullName} 没有声明开源许可证。请在仓库里加一个 LICENSE 文件（MIT / Apache-2.0 等）后再提交。`,

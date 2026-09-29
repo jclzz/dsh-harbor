@@ -255,7 +255,7 @@ export default async function PluginDetailPage({ params }: { params: Params }) {
                 className="ic-copy"
                 label="复制 Markdown"
                 doneLabel="已复制"
-                value={`[![DSHub](<SITE>/badge/${plugin.slug}.svg)](<SITE>/plugins/${plugin.slug})`.replace(
+                value={`[![DSH Harbor](<SITE>/badge/${plugin.slug}.svg)](<SITE>/plugins/${plugin.slug})`.replace(
                   /<SITE>/g,
                   SITE.url
                 )}

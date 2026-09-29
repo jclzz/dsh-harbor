@@ -1,4 +1,4 @@
-# DSHub 生产镜像
+# 插件港 DSH Harbor 生产镜像
 #
 # 提交会把新条目写进 data/plugins.json —— 运行时必须挂一个可写卷：
 #   docker run -v $PWD/data:/app/data ...

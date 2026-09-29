@@ -7,7 +7,7 @@ import { SITE } from '@/lib/site'
 export const metadata: Metadata = {
   title: '提交插件',
   description:
-    '把你的 DeepSeek Harness 插件提交到 DSHub。填一个仓库地址即可上架，不排队、不人工审核。',
+    '把你的 DeepSeek Harness 插件提交到插件港。填一个仓库地址即可上架，不排队、不人工审核。',
   alternates: { canonical: '/submit' },
 }
 

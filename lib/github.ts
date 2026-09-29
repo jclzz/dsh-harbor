@@ -27,7 +27,7 @@ export async function fetchReadme(owner: string, repo: string): Promise<ReadmeRe
     try {
       const res = await fetch(url, {
         next: { revalidate: 86_400, tags: [`readme:${owner}/${repo}`] },
-        headers: { 'user-agent': 'dshub' },
+        headers: { 'user-agent': 'dsh-harbor' },
       })
       if (!res.ok) continue
       const text = await res.text()
@@ -71,7 +71,7 @@ export async function checkRepo(fullName: string): Promise<RepoCheck> {
       cache: 'no-store',
       headers: {
         accept: 'application/vnd.github+json',
-        'user-agent': 'dshub',
+        'user-agent': 'dsh-harbor',
         ...(token ? { authorization: `bearer ${token}` } : {}),
       },
     })

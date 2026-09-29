@@ -1,4 +1,4 @@
-# DSHub · DeepSeek Harness 社区插件收录站
+# 插件港 DSH Harbor · DeepSeek Harness 社区插件收录站
 
 社区维护的 [DeepSeek Harness](https://deepseek.com/harness)（DSH）插件目录：浏览、搜索、按分类筛选、
 一键复制安装命令。视觉对齐官网（纯黑底、238px 大网格、唯一强调色 `#4D6BFE`）。
@@ -81,15 +81,15 @@ npm run sync:prune      # 顺带移除已归档 / 不存在的仓库
 ### 需要可写文件系统
 
 提交会把新条目写进 `data/plugins.json`，所以要么给容器挂一个卷，要么改用「提交开 PR」的变体。
-`DSHUB_DATA_DIR` 可以指定数据目录（默认 `./data`）。
+`HARBOR_DATA_DIR` 可以指定数据目录（默认 `./data`）。
 
 ```bash
-docker build -t dshub .
-docker run -d --name dshub -p 3000:3000 \
+docker build -t dsh-harbor .
+docker run -d --name dsh-harbor -p 3000:3000 \
   -v "$PWD/data:/app/data" \
   -e NEXT_PUBLIC_SITE_URL=https://your-domain \
   -e GITHUB_TOKEN=ghp_xxx \
-  dshub
+  dsh-harbor
 ```
 
 ### 环境变量
@@ -98,9 +98,9 @@ docker run -d --name dshub -p 3000:3000 \
 | --- | --- | --- |
 | `NEXT_PUBLIC_SITE_URL` | `http://localhost:3000` | 站点绝对地址，用于 canonical / OG / sitemap / 徽章 Markdown |
 | `GITHUB_TOKEN` | — | 提交预检与同步脚本用，避免匿名限流 |
-| `DSHUB_DATA_DIR` | `./data` | 目录数据目录 |
-| `DSHUB_SUBMIT_PER_HOUR` | `8` | 同一 IP 每小时最多提交几次 |
-| `DSHUB_REQUIRE_LICENSE` | `true` | 是否强制要求仓库声明开源许可证 |
+| `HARBOR_DATA_DIR` | `./data` | 目录数据目录 |
+| `HARBOR_SUBMIT_PER_HOUR` | `8` | 同一 IP 每小时最多提交几次 |
+| `HARBOR_REQUIRE_LICENSE` | `true` | 是否强制要求仓库声明开源许可证 |
 
 上线步骤见 **[DEPLOY.md](./DEPLOY.md)**（`docker compose up -d --build` 一把梭，Caddy 自动签证书）。
 
@@ -109,7 +109,7 @@ docker run -d --name dshub -p 3000:3000 \
 用 cron 每天刷一次 Star 与更新时间：
 
 ```cron
-17 4 * * * cd /srv/dshub && GITHUB_TOKEN=xxx npm run sync >> /var/log/dshub-sync.log 2>&1
+17 4 * * * cd /srv/dsh-harbor && GITHUB_TOKEN=xxx npm run sync >> /var/log/dsh-harbor-sync.log 2>&1
 ```
 
 同步后重启或等待 ISR 过期即可；页面有 30s–10min 的分级 revalidate。

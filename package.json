@@ -1,8 +1,8 @@
 {
-  "name": "dshub",
+  "name": "dsh-harbor",
   "version": "0.1.0",
   "private": true,
-  "description": "DSHub · DeepSeek Harness 群友插件收录站",
+  "description": "插件港 DSH Harbor · DeepSeek Harness 社区插件收录站",
   "scripts": {
     "dev": "next dev -p 3000",
     "build": "next build",

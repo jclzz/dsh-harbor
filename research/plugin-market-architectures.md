@@ -300,7 +300,7 @@ License:
 
 ---
 
-## 6. 对本项目（DSHub 群友收录站）的建议
+## 6. 对本项目（插件港 DSH Harbor）的建议
 
 按 design-brief 的定位（群友插件收录、几百条量级、单页落地），**最匹配的是 dshhub.dev / dsh-plugin.org 混合式**：
 

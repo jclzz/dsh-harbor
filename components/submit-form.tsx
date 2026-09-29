@@ -137,7 +137,7 @@ export function SubmitForm() {
   }
 
   if (result) {
-    const badge = `[![DSHub](${SITE.url}/badge/${result.slug}.svg)](${SITE.url}/plugins/${result.slug})`
+    const badge = `[![DSH Harbor](${SITE.url}/badge/${result.slug}.svg)](${SITE.url}/plugins/${result.slug})`
     return (
       <div className="form-card">
         <div className="alert ok">

@@ -64,11 +64,11 @@ function respond(body: string, status = 200) {
 export async function GET(_request: Request, { params }: { params: Promise<{ slug?: string[] }> }) {
   const { slug } = await params
   const raw = (slug ?? []).join('/')
-  if (!raw) return respond(badgeSvg('DSHub', '未知插件', false), 404)
+  if (!raw) return respond(badgeSvg('插件港', '未知插件', false), 404)
 
   const full = raw.replace(/\.svg$/i, '')
   const plugin = findBySlug(full)
-  if (!plugin) return respond(badgeSvg('DSHub', '未收录', false), 404)
+  if (!plugin) return respond(badgeSvg('插件港', '未收录', false), 404)
 
   const label = plugin.name.length > 22 ? `${plugin.name.slice(0, 21)}…` : plugin.name
   return respond(badgeSvg(label, `★ ${formatStars(plugin.stars)}`, plugin.status !== 'listed'))

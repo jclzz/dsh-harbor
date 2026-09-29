@@ -48,8 +48,8 @@ export async function generateMetadata({
   return {
     title: `${suffix}${page > 1 ? ` · 第 ${page} 页` : ''}`,
     description: isCategoryId(category)
-      ? `${categoryDesc(category)} —— DSHub 收录的 DeepSeek Harness（DSH）社区插件，附安装命令与仓库来源。`
-      : '浏览 DSHub 收录的全部 DeepSeek Harness（DSH）社区插件，按分类、Star、更新时间筛选，一键复制安装命令。',
+      ? `${categoryDesc(category)} —— 插件港收录的 DeepSeek Harness（DSH）社区插件，附安装命令与仓库来源。`
+      : '浏览插件港收录的全部 DeepSeek Harness（DSH）社区插件，按分类、Star、更新时间筛选，一键复制安装命令。',
     alternates: { canonical: page > 1 ? `/plugins?page=${page}` : '/plugins' },
   }
 }

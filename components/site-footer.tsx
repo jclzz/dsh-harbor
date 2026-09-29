@@ -18,11 +18,11 @@ export function SiteFooter() {
           <div className="foot-brand">
             <Link className="brand" href="/">
               <BrandMark />
-              <span className="name">DSHub</span>
+              <span className="name">DSH Harbor</span>
               <span className="pill">社区插件</span>
             </Link>
             <p>
-              DeepSeek Harness 社区插件收录站。群友共建、来源可查、一键安装的非官方社区项目，
+              DeepSeek Harness 社区插件收录站，中文名插件港。群友共建、来源可查、一键安装的非官方社区项目，
               与 DeepSeek 官方没有隶属关系。
             </p>
           </div>
@@ -59,7 +59,7 @@ export function SiteFooter() {
           </div>
         </div>
         <div className="foot-bottom">
-          <span>© {new Date().getFullYear()} DSHub · 群友共建的非官方收录站，与 DeepSeek 官方无关</span>
+          <span>© {new Date().getFullYear()} 插件港 DSH Harbor · 群友共建的非官方收录站，与 DeepSeek 官方无关</span>
           <span className="right">
             <span>build: {buildId}</span>
             <span>

@@ -10,11 +10,11 @@ import type { CatalogFile, CatalogStats, CategoryId, Plugin } from './types'
  * - 读：带 500ms 级别的 mtime 缓存，避免一次请求里反复读盘。
  * - 写：原子写（临时文件 + rename），并用一个串行队列避免并发写互相覆盖。
  * - 部署：需要可写文件系统（VPS / Docker / 本地）。若要部署到只读环境，
- *   把 DSHUB_DATA_DIR 指到挂载卷即可，或改用 scripts/sync.ts 提交回仓库。
+ *   把 HARBOR_DATA_DIR 指到挂载卷即可，或改用 scripts/sync.ts 提交回仓库。
  */
 
-export const DATA_DIR = process.env.DSHUB_DATA_DIR
-  ? path.resolve(process.env.DSHUB_DATA_DIR)
+export const DATA_DIR = process.env.HARBOR_DATA_DIR
+  ? path.resolve(process.env.HARBOR_DATA_DIR)
   : path.join(process.cwd(), 'data')
 
 export const CATALOG_PATH = path.join(DATA_DIR, 'plugins.json')

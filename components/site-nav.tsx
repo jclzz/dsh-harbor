@@ -21,7 +21,7 @@ export function SiteNav() {
       <div className="wrap">
         <Link className="brand" href="/">
           <BrandMark />
-          <span className="name">DSHub</span>
+          <span className="name">DSH Harbor</span>
           <span className="pill">社区插件</span>
         </Link>
 

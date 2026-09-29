@@ -11,7 +11,7 @@ export const revalidate = 300
 export const metadata: Metadata = {
   title: '关于与收录规范',
   description:
-    'DSHub 是什么、收录标准、数据来源与更新方式、如何提交插件、以及免责声明。',
+    '插件港是什么、收录标准、数据来源与更新方式、如何提交插件、以及免责声明。',
   alternates: { canonical: '/about' },
 }
 
@@ -29,9 +29,9 @@ export default function AboutPage() {
           <ChevronRight size={12} />
           <span>关于</span>
         </nav>
-        <h1>关于 DSHub</h1>
+        <h1>关于插件港</h1>
         <p className="sub">
-          DSHub 是一个社区维护的 DeepSeek Harness（DSH）插件收录站。目标是让「找到一个插件」
+          插件港（DSH Harbor）是一个社区维护的 DeepSeek Harness（DSH）插件收录站。目标是让「找到一个插件」
           这件事变成：搜一下、看一眼源码、复制一条命令、重启。
         </p>
       </div>
@@ -111,7 +111,7 @@ export default function AboutPage() {
           <div className="side-note" style={{ marginTop: 20, padding: '30px 32px' }}>
             <h3 style={{ fontSize: 16 }}>免责声明</h3>
             <p style={{ fontSize: 13.5, color: 'var(--text-2)', lineHeight: 1.9 }}>
-              DSHub 是社区维护的非官方项目，与 DeepSeek 官方没有隶属关系。
+              插件港 DSH Harbor 是社区维护的非官方项目，与 DeepSeek 官方没有隶属关系。
               DeepSeek、DeepSeek Harness 及相关标识归其所有者所有。
               插件的著作权与责任归各作者所有；本站只做索引，不托管代码、不代理下载。
               因安装第三方插件造成的任何后果由使用者自行承担。
@@ -178,7 +178,7 @@ export default function AboutPage() {
                 贴上前面的徽章：
                 <br />
                 <code style={{ display: 'block', marginTop: 6, fontSize: 11, wordBreak: 'break-all' }}>
-                  [![DSHub]({SITE.url}/badge/&lt;slug&gt;.svg)]({SITE.url}/plugins/&lt;slug&gt;)
+                  [![DSH Harbor]({SITE.url}/badge/&lt;slug&gt;.svg)]({SITE.url}/plugins/&lt;slug&gt;)
                 </code>
               </li>
             </ul>

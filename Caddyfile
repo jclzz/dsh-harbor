@@ -25,7 +25,7 @@
 
 	# 反代到应用容器。Caddy 会把真实客户端 IP 追加进 X-Forwarded-For，
 	# 应用侧取的是**最后一个**地址，所以这里必须保持默认行为、不要自己覆盖。
-	reverse_proxy dshub:3000 {
+	reverse_proxy dsh-harbor:3000 {
 		header_up X-Real-IP {remote_host}
 	}
 

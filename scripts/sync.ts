@@ -1,5 +1,5 @@
 /**
- * DSHub 目录同步脚本
+ * 插件港 DSH Harbor 目录同步脚本
  *
  *   node --experimental-strip-types scripts/sync.ts            # 刷新已有条目 + 按精选清单补全
  *   node --experimental-strip-types scripts/sync.ts --discover # 额外从 GitHub `dsh-plugin` 话题发现新仓库
@@ -20,8 +20,8 @@ import type { CatalogFile, CategoryId, Plugin } from '../lib/types.ts'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const ROOT = path.resolve(__dirname, '..')
-const DATA_DIR = process.env.DSHUB_DATA_DIR
-  ? path.resolve(process.env.DSHUB_DATA_DIR)
+const DATA_DIR = process.env.HARBOR_DATA_DIR
+  ? path.resolve(process.env.HARBOR_DATA_DIR)
   : path.join(ROOT, 'data')
 const CATALOG_PATH = path.join(DATA_DIR, 'plugins.json')
 
@@ -88,7 +88,7 @@ async function graphql(query: string): Promise<Record<string, RepoMeta | null>> 
     headers: {
       authorization: `bearer ${TOKEN}`,
       'content-type': 'application/json',
-      'user-agent': 'dshub-sync',
+      'user-agent': 'dsh-harbor-sync',
     },
     body: JSON.stringify({ query }),
   })
@@ -151,7 +151,7 @@ async function discoverRepos(pages = 3): Promise<string[]> {
               headers: {
                 authorization: `bearer ${TOKEN}`,
                 accept: 'application/vnd.github+json',
-                'user-agent': 'dshub-sync',
+                'user-agent': 'dsh-harbor-sync',
               },
             })
           ).text()

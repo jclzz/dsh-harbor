@@ -32,7 +32,7 @@ curl -fsSL https://get.docker.com | sh
 ### 2. 拉代码
 
 ```bash
-git clone <你的仓库地址> dshub && cd dshub
+git clone <你的仓库地址> dsh-harbor && cd dsh-harbor
 ```
 
 > 也可以直接 `rsync`/`scp` 把本地目录传上去。`data/` 目录一定要带上（里面有 145 条种子数据）。
@@ -59,7 +59,7 @@ GITHUB_TOKEN = ghp_xxxxxxxx
 
 ```bash
 docker compose up -d --build
-docker compose logs -f dshub      # 看到 Ready 就成
+docker compose logs -f dsh-harbor      # 看到 Ready 就成
 ```
 
 Caddy 会自动申请 Let's Encrypt 证书，几十秒后 https 就通了。
@@ -121,12 +121,12 @@ free -h   # 确认 Swap 那一行有 2.0Gi
 
 ```bash
 # 本地构建并导出（约 350–450MB 压缩包）
-docker build -t dshub:latest .
-docker save dshub:latest | gzip > dshub-image.tar.gz
+docker build -t dsh-harbor:latest .
+docker save dsh-harbor:latest | gzip > dsh-harbor-image.tar.gz
 
 # 传到服务器、导入、起服务（跳过服务器上的构建）
-scp dshub-image.tar.gz root@你的IP:/root/
-ssh root@你的IP 'gunzip -c /root/dshub-image.tar.gz | docker load && cd dshub && docker compose up -d'
+scp dsh-harbor-image.tar.gz root@你的IP:/root/
+ssh root@你的IP 'gunzip -c /root/dsh-harbor-image.tar.gz | docker load && cd dsh-harbor && docker compose up -d'
 ```
 
 服务器上只跑不打构建的话，**1 核 1G 都够**（运行时只要 ~300MB）。
@@ -141,7 +141,7 @@ crontab -e
 
 ```cron
 # 每天 4:17 刷新已有条目的元数据（用宿主机上的 node，走仓库里的脚本）
-17 4 * * * cd /root/dshub && GITHUB_TOKEN=$(grep '^GITHUB_TOKEN' .env | cut -d= -f2 | tr -d ' ') npm run sync >> /var/log/dshub-sync.log 2>&1
+17 4 * * * cd /root/dsh-harbor && GITHUB_TOKEN=$(grep '^GITHUB_TOKEN' .env | cut -d= -f2 | tr -d ' ') npm run sync >> /var/log/dsh-harbor-sync.log 2>&1
 ```
 
 跑完不用重启：页面有 30s–10min 的分级 ISR 缓存，会自动过期。
@@ -155,7 +155,7 @@ crontab -e
 
 ```bash
 # 每天 5 点把目录数据备份一份，保留 30 天
-17 5 * * * cd /root/dshub && cp data/plugins.json /root/backups/plugins-$(date +\%F).json && find /root/backups -name 'plugins-*.json' -mtime +30 -delete
+17 5 * * * cd /root/dsh-harbor && cp data/plugins.json /root/backups/plugins-$(date +\%F).json && find /root/backups -name 'plugins-*.json' -mtime +30 -delete
 ```
 
 更省事的做法是**把 VPS 上的 `data/` 当成 git 仓库的一个工作副本**，定期 commit 推回：
@@ -188,7 +188,7 @@ docker compose up -d --build
 3. 读取路径不用改：构建时 `data/plugins.json` 就在仓库里。
 
 要这条路线的话说一声，我把 `lib/catalog.ts` 抽一层 storage 适配器，
-用 `DSHUB_STORAGE=file|github` 切换，两种部署方式共用一套代码。
+用 `HARBOR_STORAGE=file|github` 切换，两种部署方式共用一套代码。
 
 ---
 
@@ -228,9 +228,9 @@ ISR 缓存 30s–10min。提交接口里有 `revalidatePath`，正常是立刻�
 80 端口没放开，或者 DNS 还没生效。先用 `dig +short A 你的域名` 确认解析到了这台机器。
 
 **提交接口 429**
-同一 IP 每小时默认 8 次（`DSHUB_SUBMIT_PER_HOUR` 可调）。这是为了保护 GitHub API。
+同一 IP 每小时默认 8 次（`HARBOR_SUBMIT_PER_HOUR` 可调）。这是为了保护 GitHub API。
 注意应用取的是 `X-Forwarded-For` 的**最后一个**地址，所以必须让它前面的反代正常追加，
 别把 `X-Forwarded-For` 写死成常量。
 
 **想收紧/放宽收录门槛**
-`DSHUB_REQUIRE_LICENSE=false` 可以放行没有许可证的仓库（默认 `true`，和站内「收录规范」一致）。
+`HARBOR_REQUIRE_LICENSE=false` 可以放行没有许可证的仓库（默认 `true`，和站内「收录规范」一致）。

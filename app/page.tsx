@@ -313,7 +313,7 @@ export default function HomePage() {
           <h2>
             你的插件，值得被更多 <span className="blue">Harness</span> 用户看到
           </h2>
-          <p>填一个仓库地址就上架，不排队。也可以给 README 贴上 DSHub 徽章，让 Star 数自动跟着同步。</p>
+          <p>填一个仓库地址就上架，不排队。也可以给 README 贴上插件港徽章，让 Star 数自动跟着同步。</p>
           <div className="cta-actions">
             <Link className="btn btn-primary btn-lg" href="/submit">
               提交插件
