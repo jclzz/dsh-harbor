@@ -47,9 +47,9 @@ vim .env
 最少要填四个：
 
 ```ini
-SITE_DOMAIN = dshdock.com
+SITE_DOMAIN = dshharbor.com
 ACME_EMAIL = you@example.com
-NEXT_PUBLIC_SITE_URL = https://dshdock.com
+NEXT_PUBLIC_SITE_URL = https://dshharbor.com
 GITHUB_TOKEN = ghp_xxxxxxxx
 ```
 
@@ -70,8 +70,8 @@ Caddy 会自动申请 Let's Encrypt 证书，几十秒后 https 就通了。
 ### 5. 验证
 
 ```bash
-curl -I https://dshdock.com
-curl -s https://dshdock.com/api/plugins | head -c 200
+curl -I https://dshharbor.com
+curl -s https://dshharbor.com/api/plugins | head -c 200
 ```
 
 然后在浏览器里真提交一条试试 —— 提交成功会立刻出现在 `/plugins`，同时 `data/plugins.json` 变脏：
