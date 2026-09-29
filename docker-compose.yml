@@ -1,0 +1,47 @@
+services:
+  dshub:
+    build: .
+    image: dshub:latest
+    container_name: dshub
+    restart: unless-stopped
+    environment:
+      # 站点绝对地址：canonical / OG / sitemap / 徽章 Markdown 都用它，必须填对
+      NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:?请在 .env 里设置 NEXT_PUBLIC_SITE_URL}
+      # 有 token 才能稳定跑提交预检与同步，没有会吃匿名限流
+      GITHUB_TOKEN: ${GITHUB_TOKEN:-}
+      # 提交写盘目录（容器内）
+      DSHUB_DATA_DIR: /app/data
+      # 同一 IP 每小时最多几次提交
+      DSHUB_SUBMIT_PER_HOUR: ${DSHUB_SUBMIT_PER_HOUR:-8}
+      # 是否强制要求仓库声明开源许可证
+      DSHUB_REQUIRE_LICENSE: ${DSHUB_REQUIRE_LICENSE:-true}
+      TZ: Asia/Shanghai
+    volumes:
+      # 目录真源挂到宿主机，容器重建不丢数据，也方便直接改 / git diff
+      - ./data:/app/data
+    expose:
+      - "3000"
+    ports:
+      # 本机调试用；有 Caddy 时可以直接删掉这一行
+      - "127.0.0.1:3000:3000"
+
+  caddy:
+    image: caddy:2-alpine
+    container_name: dshub-caddy
+    restart: unless-stopped
+    depends_on:
+      - dshub
+    environment:
+      SITE_DOMAIN: ${SITE_DOMAIN:?请在 .env 里设置 SITE_DOMAIN}
+      ACME_EMAIL: ${ACME_EMAIL:?请在 .env 里设置 ACME_EMAIL}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  caddy_data:
+  caddy_config:

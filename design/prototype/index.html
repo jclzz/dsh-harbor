@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1440">
+<title>DSHub · DeepSeek Harness 社区插件</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#000000; --panel:#0C0C0E; --panel-2:#101013;
+    --border:rgba(255,255,255,.08); --border-2:rgba(255,255,255,.14);
+    --blue:#4D6BFE;
+    --text:#FFFFFF; --text-2:rgba(255,255,255,.56); --text-3:rgba(255,255,255,.36);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{background:var(--bg)}
+  body{
+    font-family:"Inter","Noto Sans SC","PingFang SC",sans-serif;
+    background:var(--bg); color:var(--text); width:100%; min-width:320px;
+    -webkit-font-smoothing:antialiased; overflow-x:hidden;
+  }
+  .mono{font-family:"JetBrains Mono","SF Mono",Menlo,monospace}
+  .wrap{max-width:1200px;margin:0 auto;padding:0 32px}
+
+  /* 官网同款大网格 */
+  .grid-bg{
+    position:fixed; inset:0; z-index:0; pointer-events:none;
+    background-image:
+      linear-gradient(rgba(255,255,255,.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.045) 1px, transparent 1px);
+    background-size:238px 238px;
+    mask-image:linear-gradient(to bottom, black 0%, black 46%, transparent 78%);
+    -webkit-mask-image:linear-gradient(to bottom, black 0%, black 46%, transparent 78%);
+  }
+  main{position:relative;z-index:1}
+
+  /* ===== 导航 ===== */
+  nav{position:relative;z-index:2;height:64px;border-bottom:1px solid var(--border)}
+  nav .wrap{height:64px;display:flex;align-items:center;gap:36px}
+  .brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text)}
+  .brand svg{display:block}
+  .brand .name{font-weight:700;font-size:17px;letter-spacing:-.2px}
+  .brand .pill{
+    font-size:11px;color:var(--text-2);border:1px solid var(--border-2);border-radius:999px;
+    padding:3px 10px;background:rgba(255,255,255,.05);font-weight:500;
+  }
+  .nav-links{display:flex;gap:28px;margin-left:6px}
+  .nav-links a{color:var(--text-2);text-decoration:none;font-size:14px;font-weight:500}
+  .nav-links a.active,.nav-links a:hover{color:var(--text)}
+  .nav-right{margin-left:auto;display:flex;align-items:center;gap:14px}
+  .gh{color:var(--text-2);display:flex}
+  .btn{
+    display:inline-flex;align-items:center;gap:8px;height:38px;padding:0 18px;border-radius:999px;
+    font-size:13.5px;font-weight:600;text-decoration:none;border:1px solid transparent;cursor:pointer;
+  }
+  .btn-primary{background:#fff;color:#000}
+  .btn-ghost{background:transparent;border-color:var(--border-2);color:var(--text)}
+  .btn-lg{height:44px;padding:0 24px;font-size:14.5px}
+
+  /* ===== Hero（官网式左对齐 + 右侧安装卡） ===== */
+  .hero{padding-top:118px;padding-bottom:96px;display:grid;grid-template-columns:1.08fr .92fr;gap:88px;align-items:center}
+  .kicker{font-size:14.5px;color:var(--text-3);font-weight:500}
+  .kicker .mono{color:var(--text-2)}
+  .hero h1{
+    margin-top:22px;font-size:clamp(40px,4.6vw,62px);line-height:1.16;font-weight:800;letter-spacing:-1px;
+    font-family:"Noto Sans SC","Inter",sans-serif;
+  }
+  .hero h1 .blue{color:var(--blue)}
+  .hero .sub{margin-top:26px;max-width:520px;font-size:15.5px;line-height:1.9;color:var(--text-2)}
+  .hero .actions{margin-top:38px;display:flex;gap:14px}
+
+  .install-card{
+    border:1px solid var(--border-2);border-radius:16px;background:var(--panel);
+    box-shadow:0 30px 80px rgba(0,0,0,.6);
+  }
+  .ic-bar{display:flex;align-items:center;gap:7px;padding:14px 18px;border-bottom:1px solid var(--border)}
+  .ic-bar .d{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.14)}
+  .ic-tabs{margin-left:auto;display:flex;gap:4px}
+  .ic-tabs span{
+    font-size:12px;color:var(--text-3);padding:5px 12px;border-radius:7px;font-weight:500;
+  }
+  .ic-tabs span.on{color:var(--text);background:rgba(255,255,255,.09)}
+  .ic-body{padding:26px 24px 24px}
+  .ic-cmd{
+    display:flex;align-items:center;gap:12px;font-family:"JetBrains Mono",monospace;font-size:13.5px;
+    background:#000;border:1px solid var(--border);border-radius:10px;padding:14px 16px;
+  }
+  .ic-cmd .ps{color:rgba(255,255,255,.4)}
+  .ic-cmd .c{color:var(--text)}
+  .ic-cmd .c b{color:var(--blue);font-weight:600}
+  .ic-copy{
+    margin-left:auto;display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--text-2);
+    border:1px solid var(--border-2);border-radius:7px;padding:5px 10px;background:transparent;
+  }
+  .ic-note{margin-top:16px;font-size:12.5px;color:var(--text-3);line-height:1.8}
+  .ic-note .mono{color:var(--text-2);font-size:11.5px}
+  .ic-foot{
+    margin-top:22px;padding-top:20px;border-top:1px solid var(--border);
+    display:flex;justify-content:space-between;
+  }
+  .ic-stat .n{font-family:"JetBrains Mono",monospace;font-size:22px;font-weight:600}
+  .ic-stat .l{margin-top:4px;font-size:11.5px;color:var(--text-3)}
+
+  /* ===== 分类 chips ===== */
+  .chips{padding:22px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+  .chips .wrap{display:flex;align-items:center;gap:10px}
+  .chips .lead{font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--text-3);margin-right:10px;flex:none;white-space:nowrap}
+  .chip{
+    padding:8px 18px;border-radius:999px;font-size:13px;font-weight:500;color:var(--text-2);
+    border:1px solid var(--border-2);text-decoration:none;background:transparent;
+  }
+  .chip.on{background:#fff;color:#000;border-color:#fff}
+  .chip .cnt{font-family:"JetBrains Mono",monospace;font-size:10.5px;opacity:.5;margin-left:5px}
+
+  /* ===== 区块通用（官网式 pill 标签 + 左对齐大标题） ===== */
+  section{padding:104px 0 0}
+  .label{
+    display:inline-flex;align-items:center;gap:8px;padding:7px 14px;border-radius:8px;
+    border:1px solid var(--border-2);background:rgba(255,255,255,.04);
+    font-family:"JetBrains Mono",monospace;font-size:11.5px;color:var(--text-2);letter-spacing:1px;
+  }
+  .label i{width:5px;height:5px;border-radius:50%;background:var(--blue);font-style:normal}
+  .sec-head{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap;margin-bottom:48px}
+  .sec-title{margin-top:20px;font-size:clamp(28px,2.8vw,38px);font-weight:800;letter-spacing:-.5px}
+  .sec-desc{margin-top:12px;font-size:14.5px;color:var(--text-2);line-height:1.8}
+  .sec-link{
+    display:inline-flex;align-items:center;gap:8px;font-size:13.5px;font-weight:600;color:var(--text);
+    text-decoration:none;border:1px solid var(--border-2);border-radius:999px;padding:10px 18px;
+  }
+
+  /* ===== 插件卡片（官网细线图标风格） ===== */
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  .card{
+    position:relative;border-radius:16px;background:var(--panel);
+    border:1px solid var(--border);padding:26px;
+  }
+  .card.hot{border-color:rgba(77,107,254,.55)}
+  .hot-tag{
+    position:absolute;top:-11px;right:22px;padding:4px 12px;border-radius:999px;background:var(--blue);
+    font-family:"JetBrains Mono",monospace;font-size:10px;font-weight:600;color:#fff;letter-spacing:.5px;
+  }
+  .card-top{display:flex;align-items:flex-start;gap:14px}
+  .picon{
+    width:46px;height:46px;flex:none;border-radius:12px;border:1px solid var(--border-2);
+    display:flex;align-items:center;justify-content:center;color:#fff;background:rgba(255,255,255,.03);
+  }
+  .card-name{font-size:16px;font-weight:700;letter-spacing:-.2px}
+  .card-name .ver{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--text-3);font-weight:400;margin-left:8px}
+  .card-cn{font-size:12.5px;color:var(--text-3);margin-top:3px}
+  .tag{
+    margin-left:auto;flex:none;padding:5px 12px;border-radius:999px;font-size:11px;font-weight:500;
+    color:var(--text-2);border:1px solid var(--border-2);
+  }
+  .card.hot .tag{color:#8FA4FF;border-color:rgba(77,107,254,.45)}
+  .card-desc{margin-top:18px;font-size:13px;line-height:1.8;color:var(--text-2);min-height:47px}
+  .card-foot{
+    margin-top:20px;padding-top:16px;border-top:1px solid var(--border);
+    display:flex;align-items:center;gap:9px;font-size:12px;color:var(--text-3);
+  }
+  .avatar{
+    width:22px;height:22px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;
+    font-size:10.5px;font-weight:700;color:#fff;
+  }
+  .card-foot .dl{margin-left:auto;display:flex;align-items:center;gap:6px;font-family:"JetBrains Mono",monospace;color:var(--text-2)}
+  .card-foot .sep{opacity:.4}
+  .card-foot .src{font-family:"JetBrains Mono",monospace;font-size:11px}
+
+  /* ===== 最新上架 ===== */
+  .latest{display:grid;grid-template-columns:330px 1fr;gap:72px;align-items:start}
+  .latest .sec-title{font-size:32px}
+  .list{border:1px solid var(--border);border-radius:16px;background:var(--panel);overflow:hidden}
+  .row{display:flex;align-items:center;gap:16px;padding:19px 24px;border-bottom:1px solid var(--border)}
+  .row:last-child{border-bottom:none}
+  .row .picon{width:40px;height:40px;border-radius:10px}
+  .row-name{font-size:14.5px;font-weight:600}
+  .row-name .tag2{margin-left:10px;font-size:10.5px;padding:3px 10px;vertical-align:2px}
+  .row-desc{font-size:12.5px;color:var(--text-3);margin-top:4px}
+  .row-meta{margin-left:auto;display:flex;align-items:center;gap:18px;flex:none}
+  .row-author{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--text-2)}
+  .row-time{font-family:"JetBrains Mono",monospace;font-size:11.5px;color:var(--text-3);width:58px;text-align:right}
+  .row-arrow{color:var(--text-3)}
+
+  /* ===== 提交插件 ===== */
+  .submit{display:grid;grid-template-columns:1fr 540px;gap:80px;align-items:center}
+  .steps{margin-top:44px;display:flex;flex-direction:column}
+  .step{display:flex;gap:20px;padding:24px 4px;border-bottom:1px solid var(--border)}
+  .step:last-child{border-bottom:none}
+  .step-num{
+    font-family:"JetBrains Mono",monospace;font-size:12px;font-weight:600;color:var(--text-2);
+    width:34px;height:34px;flex:none;border-radius:9px;border:1px solid var(--border-2);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .step h3{font-size:15.5px;font-weight:700}
+  .step p{margin-top:7px;font-size:13px;line-height:1.8;color:var(--text-2)}
+  .step p .mono{color:var(--text);font-size:12px;border:1px solid var(--border-2);border-radius:5px;padding:1px 6px}
+
+  .code-win{
+    border-radius:16px;overflow:hidden;border:1px solid var(--border-2);
+    background:var(--panel);box-shadow:0 30px 80px rgba(0,0,0,.6);
+  }
+  .code-bar{display:flex;align-items:center;gap:7px;padding:13px 18px;border-bottom:1px solid var(--border)}
+  .code-bar .d{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.14)}
+  .code-bar .tab{
+    margin-left:14px;font-family:"JetBrains Mono",monospace;font-size:11.5px;color:var(--text);
+    padding:5px 12px;border-radius:7px;background:rgba(255,255,255,.07);
+  }
+  .code-bar .tab2{margin-left:2px;font-family:"JetBrains Mono",monospace;font-size:11.5px;color:var(--text-3);padding:5px 12px}
+  .code-body{padding:22px 24px;font-family:"JetBrains Mono",monospace;font-size:12.5px;line-height:1.95;background:#000}
+  .code-body .ln{display:flex}
+  .code-body .no{width:30px;flex:none;color:rgba(255,255,255,.18);user-select:none}
+  .tk-k{color:rgba(255,255,255,.92)}.tk-s{color:rgba(255,255,255,.5)}.tk-p{color:rgba(255,255,255,.28)}.tk-b{color:#8FA4FF}
+  .code-cmd{padding:16px 24px;border-top:1px solid var(--border);font-family:"JetBrains Mono",monospace;font-size:12px;background:var(--panel)}
+  .code-cmd .ps{color:rgba(255,255,255,.4)}
+  .code-cmd .ok{color:#4ADE80}
+  .code-cmd .cm{color:var(--text-3)}
+
+  /* ===== 贡献者 ===== */
+  .contributors{text-align:center}
+  .contributors .sec-desc{max-width:none}
+  .avatars{margin:52px auto 0;display:flex;justify-content:center;flex-wrap:wrap;max-width:920px}
+  .contrib{display:flex;flex-direction:column;align-items:center;gap:9px;width:94px}
+  .contrib .avatar{width:52px;height:52px;font-size:19px;border-radius:50%;border:2px solid rgba(255,255,255,.12)}
+  .contrib .nm{font-size:12px;color:var(--text-2)}
+  .contrib .ct{font-family:"JetBrains Mono",monospace;font-size:10px;color:var(--text-3)}
+  .contrib.more .avatar{background:transparent;border-style:dashed;border-color:var(--border-2);color:var(--text-2);font-family:"JetBrains Mono",monospace;font-size:13px}
+
+  /* ===== CTA（官网式极简） ===== */
+  .cta{margin-top:120px}
+  .cta-box{
+    position:relative;border:1px solid var(--border-2);border-radius:20px;overflow:hidden;
+    padding:88px 72px;text-align:center;background:var(--panel);
+    background-image:
+      linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
+    background-size:120px 120px;background-position:center;
+  }
+  .cta-box h2{font-size:36px;font-weight:800;letter-spacing:-.5px}
+  .cta-box h2 .blue{color:var(--blue)}
+  .cta-box p{margin:18px auto 0;font-size:14.5px;color:var(--text-2);line-height:1.9;max-width:460px}
+  .cta-actions{margin-top:36px;display:flex;justify-content:center;gap:14px}
+
+  /* ===== 页脚 ===== */
+  footer{margin-top:120px;border-top:1px solid var(--border);position:relative;z-index:1}
+  .foot-main{display:grid;grid-template-columns:1.7fr 1fr 1fr 1fr;gap:40px;padding:72px 0 56px}
+  .foot-brand p{margin-top:18px;font-size:13px;line-height:1.9;color:var(--text-3);max-width:320px}
+  .foot-col h4{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--text-3);letter-spacing:1.5px;font-weight:500}
+  .foot-col a{display:block;margin-top:16px;font-size:13px;color:var(--text-2);text-decoration:none}
+  .foot-bottom{
+    border-top:1px solid var(--border);padding:24px 0 32px;display:flex;align-items:center;
+    font-size:12px;color:var(--text-3);
+  }
+  .foot-bottom .right{margin-left:auto;display:flex;gap:26px;font-family:"JetBrains Mono",monospace;font-size:11.5px}
+
+  /* ===== 响应式适配 ===== */
+  @media (max-width:1240px){
+    .wrap{padding:0 28px}
+  }
+  @media (max-width:1080px){
+    .hero{grid-template-columns:1fr;gap:56px;padding-top:88px;padding-bottom:72px}
+    .hero .sub{max-width:640px}
+    .install-card{max-width:680px}
+    .grid{grid-template-columns:repeat(2,1fr)}
+    .latest{grid-template-columns:1fr;gap:40px}
+    .submit{grid-template-columns:1fr;gap:56px}
+    .code-win{max-width:680px}
+    .foot-main{grid-template-columns:1fr 1fr;gap:48px 32px}
+  }
+  @media (max-width:900px){
+    .nav-links{display:none}
+    .chips .wrap{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none}
+    .chips .wrap::-webkit-scrollbar{display:none}
+    .chip{flex:none}
+  }
+  @media (max-width:700px){
+    section{padding:72px 0 0}
+    .hero{padding-top:64px;padding-bottom:56px}
+    .hero .actions{flex-wrap:wrap}
+    .grid{grid-template-columns:1fr}
+    .ic-foot{flex-wrap:wrap;gap:18px 28px}
+    .cta-box{padding:56px 28px}
+    .cta-box h2{font-size:26px}
+    .row-meta .row-time{display:none}
+    .foot-main{grid-template-columns:1fr;gap:36px}
+    .foot-bottom{flex-wrap:wrap;gap:12px}
+    .foot-bottom .right{margin-left:0}
+  }
+  @media (max-width:520px){
+    .wrap{padding:0 20px}
+    .row-author{display:none}
+    .ic-cmd{font-size:12px}
+    .ic-cmd .c{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  }
+</style>
+</head>
+<body>
+<div class="grid-bg"></div>
+
+<!-- ================= 导航 ================= -->
+<nav>
+  <div class="wrap">
+    <a class="brand" href="#">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7" stroke-linejoin="round"><path d="M12 2.5 21 7.5v9l-9 5-9-5v-9l9-5z"/><path d="M12 12 21 7.5M12 12v9.5M12 12 3 7.5"/></svg>
+      <span class="name">DSHub</span>
+      <span class="pill">社区插件</span>
+    </a>
+    <div class="nav-links">
+      <a href="#" class="active">插件库</a>
+      <a href="#">分类</a>
+      <a href="#">榜单</a>
+      <a href="#">关于</a>
+    </div>
+    <div class="nav-right">
+      <a class="gh" href="#">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56 0-.27-.01-1.17-.02-2.12-3.2.7-3.88-1.36-3.88-1.36-.52-1.33-1.28-1.68-1.28-1.68-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.03 1.76 2.69 1.25 3.35.96.1-.75.4-1.25.72-1.54-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.28 1.18-3.09-.12-.29-.51-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.16-1.18 3.16-1.18.63 1.59.24 2.76.12 3.05.74.81 1.18 1.83 1.18 3.09 0 4.42-2.7 5.4-5.27 5.68.41.36.78 1.05.78 2.12 0 1.54-.01 2.77-.01 3.15 0 .31.21.67.8.56A10.52 10.52 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5z"/></svg>
+      </a>
+      <a class="btn btn-primary" href="#">提交插件</a>
+    </div>
+  </div>
+</nav>
+
+<main>
+  <!-- ================= Hero ================= -->
+  <header class="hero wrap">
+    <div>
+      <p class="kicker">DeepSeek Harness · <span class="mono">群友共建插件收录站</span></p>
+      <h1>社区插件，<br><span class="blue">随需挂载</span></h1>
+      <p class="sub">一切皆插件。这里收录群友为 DeepSeek Harness 开发的每一个插件 —— 浏览、搜索、一键安装，全部经过人工审核、源码可查。</p>
+      <div class="actions">
+        <a class="btn btn-primary btn-lg" href="#">浏览插件库</a>
+        <a class="btn btn-ghost btn-lg" href="#">提交插件</a>
+        <a class="btn btn-ghost btn-lg" href="#">开发文档</a>
+      </div>
+    </div>
+
+    <div class="install-card">
+      <div class="ic-bar">
+        <span class="d"></span><span class="d"></span><span class="d"></span>
+        <div classic class="ic-tabs"><span class="on">一键安装</span><span>手动安装</span></div>
+      </div>
+      <div class="ic-body">
+        <div class="ic-cmd">
+          <span class="ps">$</span>
+          <span class="c">dsh plugin install <b>web-search-pro</b></span>
+          <span class="ic-copy">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="12" height="12" rx="2.5"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            复制
+          </span>
+        </div>
+        <p class="ic-note">需要 DeepSeek Harness <span class="mono">&gt;= 0.9.0</span>。安装后由 Cordis 内核自动挂载，在配置层即可启用或停用。</p>
+        <div class="ic-foot">
+          <div class="ic-stat"><div class="n">128</div><div class="l">收录插件</div></div>
+          <div class="ic-stat"><div class="n">46</div><div class="l">群友作者</div></div>
+          <div class="ic-stat"><div class="n">21.4k</div><div class="l">累计下载</div></div>
+          <div class="ic-stat"><div class="n">9</div><div class="l">本周新上架</div></div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= 分类 chips ================= -->
+  <div class="chips">
+    <div class="wrap">
+      <span class="lead">// 按分类浏览</span>
+      <a class="chip on" href="#">全部<span class="cnt">128</span></a>
+      <a class="chip" href="#">搜索<span class="cnt">18</span></a>
+      <a class="chip" href="#">开发<span class="cnt">27</span></a>
+      <a class="chip" href="#">效率<span class="cnt">31</span></a>
+      <a class="chip" href="#">记忆<span class="cnt">9</span></a>
+      <a class="chip" href="#">自动化<span class="cnt">16</span></a>
+      <a class="chip" href="#">多模态<span class="cnt">12</span></a>
+      <a class="chip" href="#">数据<span class="cnt">11</span></a>
+      <a class="chip" href="#">娱乐<span class="cnt">4</span></a>
+    </div>
+  </div>
+
+  <!-- ================= 本周精选 ================= -->
+  <section class="wrap">
+    <div class="sec-head">
+      <div>
+        <span class="label"><i></i>FEATURED</span>
+        <h2 class="sec-title">本周精选</h2>
+        <p class="sec-desc">由群友投票与下载量共同选出，每周一更新</p>
+      </div>
+      <a class="sec-link" href="#">查看全部 128 个插件
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+    </div>
+
+    <div class="grid">
+      <!-- 1 -->
+      <div class="card hot">
+        <span class="hot-tag">HOT · No.1</span>
+        <div class="card-top">
+          <span class="picon">
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.9 5.7 3.9 9s-1.4 6.4-3.9 9c-2.5-2.6-3.9-5.7-3.9-9S9.5 5.6 12 3z"/></svg>
+          </span>
+          <div>
+            <div class="card-name">Web Search Pro<span class="ver">v1.4.2</span></div>
+            <div class="card-cn">联网搜索增强</div>
+          </div>
+          <span class="tag">搜索</span>
+        </div>
+        <p class="card-desc">聚合多引擎实时检索，结果自动去重与摘要，让 Harness 随时联网获取最新信息。</p>
+        <div class="card-foot">
+          <span class="avatar" style="background:linear-gradient(135deg,#4D6BFE,#36C6F0)">海</span>
+          海边的卡夫卡
+          <span class="dl">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 19h16"/></svg>
+            3.2k
+          </span>
+          <span class="sep">·</span><span class="src">MIT</span>
+        </div>
+      </div>
+      <!-- 2 -->
+      <div class="card">
+        <div class="card-top">
+          <span class="picon">
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m8 6-6 6 6 6M16 6l6 6-6 6"/></svg>
+          </span>
+          <div>
+            <div class="card-name">Code Runner<span class="ver">v2.0.1</span></div>
+            <div class="card-cn">代码沙箱</div>
+          </div>
+          <span class="tag">开发</span>
+        </div>
+        <p class="card-desc">在隔离沙箱中执行 Python / JS / Shell，运行结果与图表直接回写到对话上下文。</p>
+        <div class="card-foot">
+          <span class="avatar" style="background:linear-gradient(135deg,#7C5CFC,#C792EA)">白</span>
+          老白
+          <span class="dl">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 19h16"/></svg>
+            2.8k
+          </span>
+          <span class="sep">·</span><span class="src">MIT</span>
+        </div>
+      </div>
+      <!-- 3 -->
+      <div class="card">
+        <div class="card-top">
+          <span class="picon">
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><ellipse cx="12" cy="5.5" rx="8" ry="3"/><path d="M4 5.5V12c0 1.66 3.58 3 8 3s8-1.34 8-3V5.5M4 12v6.5c0 1.66 3.58 3 8 3s8-1.34 8-3V12"/></svg>
+          </span>
+          <div>
+            <div class="card-name">Memory Bank<span class="ver">v0.9.5</span></div>
+            <div class="card-cn">长期记忆库</div>
+          </div>
+          <span class="tag">记忆</span>
+        </div>
+        <p class="card-desc">跨会话记忆存储与语义召回，重要偏好和事实一次记住、永久可用。</p>
+        <div class="card-foot">
+          <span class="avatar" style="background:linear-gradient(135deg,#3DDC97,#36C6F0)">蘑</span>
+          蘑菇
+          <span class="dl">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 19h16"/></svg>
+            2.1k
+          </span>
+          <span class="sep">·</span><span class="src">Apache-2.0</span>
+        </div>
+      </div>
+      <!-- 4 -->
+      <div class="card">
+        <div class="card-top">
+          <span class="picon">
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+          </span>
+          <div>
+            <div class="card-name">Feishu Bridge<span class="ver">v1.2.0</span></div>
+            <div class="card-cn">飞书桥</div>
+          </div>
+          <span class="tag">效率</span>
+        </div>
+        <p class="card-desc">消息通知、多维表格与云文档读写一键打通，任务结果自动推送到群里。</p>
+        <div class="card-foot">
+          <span class="avatar" style="background:linear-gradient(135deg,#FFB84D,#FF7A59)">夜</span>
+          夜猫子
+          <span class="dl">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 19h16"/></svg>
+            1.6k
+          </span>
+          <span class="sep">·</span><span class="src">MIT</span>
+        </div>
+      </div>
+      <!-- 5 -->
+      <div class="card">
+        <div class="card-top">
+          <span class="picon">
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="6" cy="6" r="2.6"/><circle cx="6" cy="18" r="2.6"/><circle cx="18" cy="8" r="2.6"/><path d="M6 8.6v6.8M18 10.6c0 4.5-4 5.4-8 5.4"/></svg>
+          </span>
+          <div>
+            <div class="card-name">Git Assistant<span class="ver">v1.0.3</span></div>
+            <div class="card-cn">Git 助手</div>
+          </div>
+          <span class="tag">开发</span>
+        </div>
+        <p class="card-desc">阅读变更自动生成规范的 commit message 与 PR 描述，支持自定义模板。</p>
+        <div class="card-foot">
+          <span class="avatar" style="background:linear-gradient(135deg,#F472B6,#A58BFF)">澈</span>
+          阿澈
+          <span class="dl">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 19h16"/></svg>
+            1.4k
+          </span>
+          <span class="sep">·</span><span class="src">MIT</span>
+        </div>
+      </div>
+      <!-- 6 -->
+      <div class="card">
+        <div class="card-top">
+          <span class="picon">
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 2.5 14.6 9l6.9.3-5.4 4.4 1.8 6.8L12 16.7 6.1 20.5l1.8-6.8L2.5 9.3 9.4 9 12 2.5z"/></svg>
+          </span>
+          <div>
+            <div class="card-name">Prompt Library<span class="ver">v0.8.2</span></div>
+            <div class="card-cn">提示词库</div>
+          </div>
+          <span class="tag">效率</span>
+        </div>
+        <p class="card-desc">社区精选提示词合集，按场景分类，一键导入 Harness 会话直接使用。</p>
+        <div class="card-foot">
+          <span class="avatar" style="background:linear-gradient(135deg,#36C6F0,#4D6BFE)">桃</span>
+          桃桃
+          <span class="dl">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 19h16"/></svg>
+            1.1k
+          </span>
+          <span class="sep">·</span><span class="src">CC0</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 最新上架 ================= -->
+  <section class="wrap">
+    <div class="latest">
+      <div>
+        <span class="label"><i></i>NEW</span>
+        <h2 class="sec-title">最新上架</h2>
+        <p class="sec-desc" style="line-height:1.9">每周都有群友发布新插件。上架前经过基础安全审查与实测可用性验证，放心安装。</p>
+        <a class="btn btn-ghost" style="margin-top:30px" href="#">
+          订阅更新 RSS
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1.6" fill="currentColor" stroke="none"/></svg>
+        </a>
+      </div>
+      <div class="list">
+        <div class="row">
+          <span class="picon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M8.5 11h7M8.5 14.5h4"/></svg>
+          </span>
+          <div>
+            <div class="row-name">Screenshot OCR<span class="tag tag2">多模态</span></div>
+            <div class="row-desc">框选截图，图中文字直接进上下文，表格自动转 Markdown</div>
+          </div>
+          <div class="row-meta">
+            <span class="row-author"><span class="avatar" style="background:linear-gradient(135deg,#7C5CFC,#4D6BFE)">熬</span>熬夜选手</span>
+            <span class="row-time">3 天前</span>
+            <svg class="row-arrow" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m9 5 7 7-7 7"/></svg>
+          </div>
+        </div>
+        <div class="row">
+          <span class="picon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M17.5 18a4.5 4.5 0 0 0 .4-8.98 6 6 0 0 0-11.7 1.62A4 4 0 0 0 7 18.5h10.5z"/></svg>
+          </span>
+          <div>
+            <div class="row-name">Weather Now<span class="tag tag2">数据</span></div>
+            <div class="row-desc">全球城市实时天气、空气质量与未来三天穿衣建议</div>
+          </div>
+          <div class="row-meta">
+            <span class="row-author"><span class="avatar" style="background:linear-gradient(135deg,#36C6F0,#3DDC97)">云</span>云朵</span>
+            <span class="row-time">5 天前</span>
+            <svg class="row-arrow" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m9 5 7 7-7 7"/></svg>
+          </div>
+        </div>
+        <div class="row">
+          <span class="picon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M14 2H7a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7l-5-5z"/><path d="M14 2v5h5M9 13h6M9 17h4"/></svg>
+          </span>
+          <div>
+            <div class="row-name">Paper Reader<span class="tag tag2">效率</span></div>
+            <div class="row-desc">PDF 论文结构化摘要：方法、结论、局限一页看清</div>
+          </div>
+          <div class="row-meta">
+            <span class="row-author"><span class="avatar" style="background:linear-gradient(135deg,#FFB84D,#F472B6)">学</span>学术咸鱼</span>
+            <span class="row-time">1 周前</span>
+            <svg class="row-arrow" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m9 5 7 7-7 7"/></svg>
+          </div>
+        </div>
+        <div class="row">
+          <span class="picon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 17l5.5-5.5 4 4L21 7"/><path d="M16 7h5v5"/></svg>
+          </span>
+          <div>
+            <div class="row-name">Stock Watch<span class="tag tag2">数据</span></div>
+            <div class="row-desc">自选股异动实时监控，触发条件自动推送提醒</div>
+          </div>
+          <div class="row-meta">
+            <span class="row-author"><span class="avatar" style="background:linear-gradient(135deg,#3DDC97,#4D6BFE)">韭</span>韭菜盒子</span>
+            <span class="row-time">2 周前</span>
+            <svg class="row-arrow" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m9 5 7 7-7 7"/></svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 提交插件 ================= -->
+  <section class="wrap">
+    <div class="submit">
+      <div>
+        <span class="label"><i></i>CONTRIBUTE</span>
+        <h2 class="sec-title">提交你的插件</h2>
+        <p class="sec-desc" style="line-height:1.9">写完插件只要三步，审核通过后 48 小时内上架。</p>
+        <div class="steps">
+          <div class="step">
+            <span class="step-num">01</span>
+            <div>
+              <h3>开发</h3>
+              <p>按插件规范编写 <span class="mono">manifest.json</span> 与入口函数，本地 <span class="mono">dsh dev</span> 调试通过。</p>
+            </div>
+          </div>
+          <div class="step">
+            <span class="step-num">02</span>
+            <div>
+              <h3>提交</h3>
+              <p>向收录仓库提交 Pull Request，或在网站填写收录表单并粘贴仓库地址。</p>
+            </div>
+          </div>
+          <div class="step">
+            <span class="step-num">03</span>
+            <div>
+              <h3>上架</h3>
+              <p>通过安全审查与实测后上架展示，作者会在群里收到上架通知与徽章。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="code-win">
+        <div class="code-bar">
+          <span class="d"></span><span class="d"></span><span class="d"></span>
+          <span class="tab">manifest.json</span>
+          <span class="tab2">README.md</span>
+        </div>
+        <div class="code-body">
+          <div class="ln"><span class="no">1</span><span class="tk-p">{</span></div>
+          <div class="ln"><span class="no">2</span><span>&nbsp;&nbsp;<span class="tk-k">"name"</span><span class="tk-p">:</span> <span class="tk-s">"web-search-pro"</span><span class="tk-p">,</span></span></div>
+          <div class="ln"><span class="no">3</span><span>&nbsp;&nbsp;<span class="tk-k">"version"</span><span class="tk-p">:</span> <span class="tk-s">"1.4.2"</span><span class="tk-p">,</span></span></div>
+          <div class="ln"><span class="no">4</span><span>&nbsp;&nbsp;<span class="tk-k">"author"</span><span class="tk-p">:</span> <span class="tk-s">"海边的卡夫卡"</span><span class="tk-p">,</span></span></div>
+          <div class="ln"><span class="no">5</span><span>&nbsp;&nbsp;<span class="tk-k">"entry"</span><span class="tk-p">:</span> <span class="tk-s">"dist/index.js"</span><span class="tk-p">,</span></span></div>
+          <div class="ln"><span class="no">6</span><span>&nbsp;&nbsp;<span class="tk-k">"permissions"</span><span class="tk-p">:</span> <span class="tk-p">[</span><span class="tk-b">"network"</span><span class="tk-p">],</span></span></div>
+          <div class="ln"><span class="no">7</span><span>&nbsp;&nbsp;<span class="tk-k">"harness"</span><span class="tk-p">:</span> <span class="tk-s">"&gt;=0.9.0"</span></span></div>
+          <div class="ln"><span class="no">8</span><span class="tk-p">}</span></div>
+        </div>
+        <div class="code-cmd">
+          <div><span class="ps">$ </span><span style="color:var(--text)">dsh publish --dry-run</span></div>
+          <div style="margin-top:6px"><span class="ok">✓</span> <span class="cm">manifest 校验通过 · 权限声明合规 · 可提交</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 贡献者 ================= -->
+  <section class="wrap contributors">
+    <span class="label"><i></i>CONTRIBUTORS</span>
+    <h2 class="sec-title">群友贡献者</h2>
+    <p class="sec-desc">46 位群友已经发布了插件，下一个就是你</p>
+    <div class="avatars">
+      <div class="contrib"><span class="avatar" style="background:linear-gradient(135deg,#4D6BFE,#36C6F0)">海</span><span class="nm">海边的卡夫卡</span><span class="ct">7 plugins</span></div>
+      <div class="contrib"><span class="avatar" style="background:linear-gradient(135deg,#7C5CFC,#C792EA)">白</span><span class="nm">老白</span><span class="ct">5 plugins</span></div>
+      <div class="contrib"><span class="avatar" style="background:linear-gradient(135deg,#3DDC97,#36C6F0)">蘑</span><span class="nm">蘑菇</span><span class="ct">4 plugins</span></div>
+      <div class="contrib"><span class="avatar" style="background:linear-gradient(135deg,#FFB84D,#FF7A59)">夜</span><span class="nm">夜猫子</span><span class="ct">4 plugins</span></div>
+      <div class="contrib"><span class="avatar" style="background:linear-gradient(135deg,#F472B6,#A58BFF)">澈</span><span class="nm">阿澈</span><span class="ct">3 plugins</span></div>
+      <div class="contrib"><span class="avatar" style="background:linear-gradient(135deg,#36C6F0,#4D6BFE)">桃</span><span class="nm">桃桃</span><span class="ct">3 plugins</span></div>
+      <div class="contrib"><span class="avatar" style="background:linear-gradient(135deg,#4D6BFE,#7C5CFC)">熬</span><span class="nm">熬夜选手</span><span class="ct">2 plugins</span></div>
+      <div class="contrib"><span class="avatar" style="background:linear-gradient(135deg,#0EA5E9,#3DDC97)">云</span><span class="nm">云朵</span><span class="ct">2 plugins</span></div>
+      <div class="contrib"><span class="avatar" style="background:linear-gradient(135deg,#D97706,#F472B6)">学</span><span class="nm">学术咸鱼</span><span class="ct">1 plugin</span></div>
+      <div class="contrib more"><span class="avatar">+37</span><span class="nm">更多群友</span><span class="ct">&nbsp;</span></div>
+    </div>
+  </section>
+
+  <!-- ================= CTA ================= -->
+  <section class="wrap cta">
+    <div class="cta-box">
+      <h2>你的插件，值得被更多 <span class="blue">Harness</span> 用户看到</h2>
+      <p>从想法到上架平均只要 3 天。阅读插件开发文档，今晚就能写出第一个插件。</p>
+      <div class="cta-actions">
+        <a class="btn btn-primary btn-lg" href="#">提交插件</a>
+        <a class="btn btn-ghost btn-lg" href="#">阅读开发文档</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- ================= 页脚 ================= -->
+<footer>
+  <div class="wrap">
+    <div class="foot-main">
+      <div class="foot-brand">
+        <a class="brand" href="#">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7" stroke-linejoin="round"><path d="M12 2.5 21 7.5v9l-9 5-9-5v-9l9-5z"/><path d="M12 12 21 7.5M12 12v9.5M12 12 3 7.5"/></svg>
+          <span class="name">DSHub</span>
+          <span class="pill">社区插件</span>
+        </a>
+        <p>DeepSeek Harness 群友插件收录站。群友共建、人工审核、源码可查的非官方社区项目。</p>
+      </div>
+      <div class="foot-col">
+        <h4>导航</h4>
+        <a href="#">插件库</a><a href="#">分类浏览</a><a href="#">下载榜单</a><a href="#">最新上架</a>
+      </div>
+      <div class="foot-col">
+        <h4>资源</h4>
+        <a href="#">插件开发文档</a><a href="#">收录规范</a><a href="#">更新日志</a><a href="#">API</a>
+      </div>
+      <div class="foot-col">
+        <h4>社区</h4>
+        <a href="#">GitHub 仓库</a><a href="#">交流群</a><a href="#">问题反馈</a><a href="#">友情链接</a>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 DSHub · 群友共建的非官方收录站，与 DeepSeek 官方无关</span>
+      <span class="right">
+        <span>build: 2026.09.28</span>
+        <span>made with ♥ by 群友们</span>
+      </span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

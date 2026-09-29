@@ -1,0 +1,38 @@
+# DSHub 反代配置：自动申请并续期 Let's Encrypt 证书
+# 环境变量 SITE_DOMAIN / ACME_EMAIL 由 docker-compose 传入
+
+{
+	email {$ACME_EMAIL}
+	# 上线前先在 staging 验证，避免把 Let's Encrypt 的正式额度试光：
+	# acme_ca https://acme-staging-v02.api.letsencrypt.org/directory
+}
+
+{$SITE_DOMAIN} {
+	encode zstd gzip
+
+	# 徽章与静态资源交给浏览器/CDN 长缓存
+	@badge path /badge/*.svg
+	header @badge Cache-Control "public, max-age=3600, s-maxage=21600, stale-while-revalidate=86400"
+
+	# 安全响应头
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		X-Frame-Options "SAMEORIGIN"
+		-Server
+	}
+
+	# 反代到应用容器。Caddy 会把真实客户端 IP 追加进 X-Forwarded-For，
+	# 应用侧取的是**最后一个**地址，所以这里必须保持默认行为、不要自己覆盖。
+	reverse_proxy dshub:3000 {
+		header_up X-Real-IP {remote_host}
+	}
+
+	log {
+		output file /data/access.log {
+			roll_size 20MB
+			roll_keep 5
+		}
+	}
+}
